@@ -2,6 +2,8 @@ package com.example.moviesapp.di
 
 import com.example.moviesapp.data.datasource.CartDataSource
 import com.example.moviesapp.data.datasource.MovieDataSource
+import com.example.moviesapp.data.repo.CartRepository
+import com.example.moviesapp.data.repo.MovieRepository
 import com.example.moviesapp.retrofit.ApiUtils
 import com.example.moviesapp.retrofit.CartDao
 import com.example.moviesapp.retrofit.MovieDao
@@ -15,6 +17,18 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 class AppModule {
 
+
+    @Provides
+    @Singleton
+    fun provideCartRepository(cartDataSource: CartDataSource) : CartRepository{
+        return CartRepository(cartDataSource)
+    }
+
+    @Provides
+    @Singleton
+    fun provideMovieRepository(movieDataSource: MovieDataSource) : MovieRepository{
+        return MovieRepository(movieDataSource)
+    }
 
     @Provides
     @Singleton
