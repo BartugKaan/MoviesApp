@@ -25,7 +25,7 @@ interface CartDao {
                                @Field("image") image:String,
                                @Field("price") price:Int,
                                @Field("category") category: String,
-                               @Field("rating") rating:String,
+                               @Field("rating") rating:Double,
                                @Field("year") year:Int,
                                @Field("director") director:String,
                                @Field("description") description:String,
