@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.moviesapp.ui.components.CarouselSlider
+import com.example.moviesapp.ui.components.CustomBottomAppBar
 import com.example.moviesapp.ui.viewmodel.MainScreenViewModel
 import com.google.gson.Gson
 import com.skydoves.landscapist.glide.GlideImage
@@ -41,7 +42,10 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel, navController: NavContr
             CenterAlignedTopAppBar(
                 title = { Text("Popcorn Deals") }
             ) 
-        }
+        },
+        bottomBar = { CustomBottomAppBar(navController, currentPageIndex = 0) }
+
+
     ) { paddingValues ->
         Column(
             modifier = Modifier
