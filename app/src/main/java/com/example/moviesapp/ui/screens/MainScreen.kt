@@ -19,6 +19,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,6 +38,11 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel, navController: NavContr
     val movieList = mainScreenViewModel.movieList.observeAsState(listOf())
     val baseUrl = "http://kasimadalan.pe.hu/movies/images/"
 
+    LaunchedEffect(key1 = true) {
+        mainScreenViewModel.getAllMovies()
+    }
+
+
     Scaffold(
         topBar = { 
             CenterAlignedTopAppBar(
@@ -44,8 +50,6 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel, navController: NavContr
             ) 
         },
         bottomBar = { CustomBottomAppBar(navController, currentPageIndex = 0) }
-
-
     ) { paddingValues ->
         Column(
             modifier = Modifier

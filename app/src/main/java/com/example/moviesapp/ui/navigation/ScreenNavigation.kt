@@ -10,10 +10,12 @@ import com.example.moviesapp.data.entity.Movie
 import com.example.moviesapp.ui.screens.MainScreen
 import com.example.moviesapp.ui.screens.MovieDetail
 import com.example.moviesapp.ui.viewmodel.MainScreenViewModel
+import com.example.moviesapp.ui.viewmodel.MovieDetailScreenViewModel
 import com.google.gson.Gson
 
 @Composable
-fun ScreenNavigation(mainScreenViewModel: MainScreenViewModel){
+fun ScreenNavigation(mainScreenViewModel: MainScreenViewModel,
+                     movieDetailScreenViewModel: MovieDetailScreenViewModel){
     val navController = rememberNavController()
 
     NavHost(navController= navController, startDestination = "mainScreen"){
@@ -26,7 +28,7 @@ fun ScreenNavigation(mainScreenViewModel: MainScreenViewModel){
         ){
             val movieJson = it.arguments?.getString("movie")
             val movieObject = Gson().fromJson(movieJson, Movie::class.java)
-            MovieDetail(movie = movieObject)
+            MovieDetail(movie = movieObject, movieDetailScreenViewModel = movieDetailScreenViewModel)
         }
     }
 }
