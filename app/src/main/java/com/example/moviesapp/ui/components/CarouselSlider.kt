@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -28,8 +29,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.graphics.graphicsLayer
 
 
@@ -60,7 +59,7 @@ fun CarouselSlider(movies: List<Movie>) {
     }
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.height(400.dp)
     ) {
         Box(modifier = Modifier.padding(16.dp)) {
             LazyRow(
