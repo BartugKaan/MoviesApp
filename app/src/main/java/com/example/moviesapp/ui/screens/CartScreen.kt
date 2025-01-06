@@ -1,13 +1,10 @@
 package com.example.moviesapp.ui.screens
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -25,51 +22,38 @@ fun CartScreen(
     paddingValues: PaddingValues,
     cartScreenViewModel: CartScreenViewModel
 ) {
-    val cartMovieList = cartScreenViewModel.cartMovieList.observeAsState(listOf())
-    val baseUrl = "http://kasimadalan.pe.hu/movies/images/"
-    var totalAmount = remember { mutableIntStateOf(0) }
-
-
+    val cartItems = cartScreenViewModel.cartMovieList.observeAsState(initial = emptyList())
+    val totalAmount = cartScreenViewModel.totalAmount.observeAsState(initial = 0)
+    
     LaunchedEffect(key1 = true) {
-        cartScreenViewModel.getAllCartMovies("BartugKaan")
+        cartScreenViewModel.loadCart()
     }
-
+    
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(paddingValues)
     ) {
+        // Cart Items List
         LazyColumn(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
         ) {
-            items(cartMovieList.value) { item ->
+            items(cartItems.value) { movie ->
                 CartItem(
-                    item = item,
-                    baseUrl = baseUrl,
-                    onIncrease = {
-                        item.orderAmount += 1
-                        totalAmount.intValue = cartMovieList.value.sumOf { it.price * it.orderAmount }
-                        cartScreenViewModel.getAllCartMovies("BartugKaan")
+                    movie = movie,
+                    onQuantityChange = { newQuantity ->
+                        cartScreenViewModel.updateQuantity(movie.cartId, newQuantity)
                     },
-                    onDecrease = {
-                        if (item.orderAmount > 1) {
-                            item.orderAmount -= 1
-                            totalAmount.intValue = cartMovieList.value.sumOf { it.price * it.orderAmount }
-                            cartScreenViewModel.getAllCartMovies("BartugKaan")
-                        } else {
-                            cartScreenViewModel.deleteMovieFromCart(item.cartId, "BartugKaan")
-                        }
-                    },
-                    onRemove = { 
-                        cartScreenViewModel.deleteMovieFromCart(item.cartId, "BartugKaan")
+                    onRemove = {
+                        cartScreenViewModel.removeFromCart(movie.cartId)
                     }
                 )
-                Divider(modifier = Modifier.padding(vertical = 8.dp))
             }
         }
+        
+        // Total Amount and Clear Cart Button
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -81,13 +65,25 @@ fun CartScreen(
                     .padding(16.dp)
                     .fillMaxWidth()
             ) {
+                Button(
+                    onClick = { cartScreenViewModel.clearCart() },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Clear Cart")
+                }
+                
+                Spacer(modifier = Modifier.height(8.dp))
+                
                 Text(
                     text = "Total Amount",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "₺${totalAmount.intValue}",
+                    text = "₺${totalAmount.value}",
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
@@ -97,21 +93,17 @@ fun CartScreen(
     }
 }
 
-//TODO: Custom CarItem will be added
 @Composable
 private fun CartItem(
-    item: MovieCart,
-    baseUrl: String,
-    onIncrease: () -> Unit,
-    onDecrease: () -> Unit,
+    movie: MovieCart,
+    onQuantityChange: (Int) -> Unit,
     onRemove: () -> Unit
 ) {
-    var quantity by remember { mutableStateOf(item.orderAmount) }
-
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp)
+            .padding(8.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Row(
             modifier = Modifier
@@ -119,67 +111,53 @@ private fun CartItem(
                 .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Movie Image
             GlideImage(
-                imageModel = baseUrl + item.image,
-                modifier = Modifier.size(80.dp, 120.dp)
+                imageModel = "http://kasimadalan.pe.hu/movies/images/${movie.image}",
+                modifier = Modifier.size(80.dp)
             )
-
+            
+            // Movie Details
             Column(
                 modifier = Modifier
                     .weight(1f)
                     .padding(horizontal = 8.dp)
             ) {
                 Text(
-                    text = item.name,
-                    fontSize = 16.sp,
+                    text = movie.name,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "₺${item.price}",
-                    fontSize = 14.sp,
+                    text = "₺${movie.price}",
                     color = MaterialTheme.colorScheme.primary
                 )
-
-                Row(
-                    modifier = Modifier.padding(top = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(onClick = {
-                        quantity += 1
-                        item.orderAmount = quantity
-                        onIncrease()
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.KeyboardArrowUp,
-                            contentDescription = "Increase quantity"
-                        )
-                    }
-                    Text(
-                        text = "$quantity",
-                        modifier = Modifier.padding(horizontal = 8.dp),
-                        fontSize = 16.sp
-                    )
-                    IconButton(onClick = {
-                        if (quantity > 1) {
-                            quantity -= 1
-                            item.orderAmount = quantity
-                            onDecrease()
-                        }
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.KeyboardArrowDown,
-                            contentDescription = "Decrease quantity"
-                        )
-                    }
-                }
             }
-
-            IconButton(onClick = onRemove) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "Remove item",
-                    tint = MaterialTheme.colorScheme.error
+            
+            // Quantity Controls
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                IconButton(onClick = { onQuantityChange(movie.orderAmount - 1) }) {
+                    Text("-")
+                }
+                
+                Text(
+                    text = movie.orderAmount.toString(),
+                    modifier = Modifier.padding(horizontal = 8.dp)
                 )
+                
+                IconButton(onClick = { onQuantityChange(movie.orderAmount + 1) }) {
+                    Text("+")
+                }
+                
+                IconButton(onClick = onRemove) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Remove item",
+                        tint = MaterialTheme.colorScheme.error
+                    )
+                }
             }
         }
     }

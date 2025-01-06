@@ -28,10 +28,6 @@ import com.skydoves.landscapist.glide.GlideImage
 fun MovieDetail(movie: Movie, movieDetailScreenViewModel: MovieDetailScreenViewModel){
     val baseUrl = "http://kasimadalan.pe.hu/movies/images/"
 
-    LaunchedEffect(key1 = true) {
-        movieDetailScreenViewModel.getAllCartMovies("BartugKaan")
-    }
-
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.SpaceEvenly,
@@ -40,7 +36,7 @@ fun MovieDetail(movie: Movie, movieDetailScreenViewModel: MovieDetailScreenViewM
         GlideImage(imageModel = baseUrl + movie.image, modifier = Modifier.size(200.dp, 300.dp))
         Text("Fiyat : ${movie.price}", fontSize = 50.sp)
         Button(onClick = {
-            movieDetailScreenViewModel.addMovieToCart(
+            movieDetailScreenViewModel.addToCart(
                 name = movie.name,
                 image = movie.image,
                 price = movie.price,
@@ -48,9 +44,7 @@ fun MovieDetail(movie: Movie, movieDetailScreenViewModel: MovieDetailScreenViewM
                 rating = movie.rating,
                 year = movie.year,
                 director = movie.director,
-                description = movie.description,
-                orderAmount = 1,
-                userName = "BartugKaan",
+                description = movie.description
             )
         }) {
             Text("Add Cart")
