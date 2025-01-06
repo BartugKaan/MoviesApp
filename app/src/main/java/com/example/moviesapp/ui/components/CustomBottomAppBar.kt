@@ -13,45 +13,39 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.moviesapp.R
+import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.ShoppingCart
 
 @Composable
-fun CustomBottomAppBar(navController: NavController,currentPageIndex: Int){
-    val selectedItem = remember { mutableIntStateOf(currentPageIndex) }
-    NavigationBar (
-        modifier = Modifier.height(65.dp)
-    ){
+fun CustomBottomAppBar(navController: NavController, currentPageIndex: Int) {
+    NavigationBar {
         NavigationBarItem(
-            icon = {
-                Icon(
-                    painter = painterResource(R.drawable.mainscreenbottomicon),
-                    contentDescription = "Home",
-                    modifier = Modifier.size(28.dp)
-                )
-            },
-            selected = selectedItem.intValue == 0,
-            onClick = { selectedItem.intValue = 0 },
+            icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
+            label = { Text("Home") },
+            selected = currentPageIndex == 0,
+            onClick = { navController.navigate("mainScreen") }
         )
         NavigationBarItem(
-            icon = {
-                Icon(
-                    painter = painterResource(R.drawable.baseline_list_alt_24),
-                    contentDescription = "List",
-                    modifier = Modifier.size(28.dp)
-                )
-            },
-            selected = selectedItem.intValue == 1,
-            onClick = {selectedItem.intValue = 1 },
+            icon = { Icon(Icons.Default.Favorite, contentDescription = "Favorites") },
+            label = { Text("Favorites") },
+            selected = currentPageIndex == 1,
+            onClick = { /* TODO */ }
         )
         NavigationBarItem(
-            icon = {
-                Icon(
-                    painter = painterResource(R.drawable.cartscreenbottomicon),
-                    contentDescription = "Cart",
-                    modifier = Modifier.size(28.dp)
-                )
-            },
-            selected = selectedItem.intValue == 2,
-            onClick = { selectedItem.intValue = 2},
+            icon = { Icon(Icons.Default.ShoppingCart, contentDescription = "Cart") },
+            label = { Text("Cart") },
+            selected = currentPageIndex == 2,
+            onClick = { navController.navigate("cartScreen") }
+        )
+        NavigationBarItem(
+            icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
+            label = { Text("Profile") },
+            selected = currentPageIndex == 3,
+            onClick = { /* TODO */ }
         )
     }
 }
