@@ -3,7 +3,6 @@ package com.example.moviesapp.ui.viewmodel
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.moviesapp.data.entity.Movie
 import com.example.moviesapp.data.entity.MovieCart
 import com.example.moviesapp.data.repo.CartRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,6 +30,7 @@ class CartScreenViewModel @Inject constructor(var cartRepository: CartRepository
             } catch (e: Exception) {
                 Log.e("CartDebug", "Error in getAllCartMovies: ${e.message}")
                 e.printStackTrace()
+                cartMovieList.postValue(emptyList())
             }
         }
     }
@@ -47,14 +47,23 @@ class CartScreenViewModel @Inject constructor(var cartRepository: CartRepository
                        userName:String
     ){
         CoroutineScope(Dispatchers.Main).launch {
-            cartRepository.addMovieToCart(name, image, price, category, rating, year, director, description, orderAmount, userName)
+            try {
+                cartRepository.addMovieToCart(name, image, price, category, rating, year, director, description, orderAmount, userName)
+                getAllCartMovies(userName)
+            } catch (e: Exception) {
+                Log.e("CartDebug", "Error adding to cart: ${e.message}")
+            }
         }
     }
 
     fun deleteMovieFromCart(cartId:Int, userName: String){
         CoroutineScope(Dispatchers.Main).launch {
-            cartRepository.deleteMovieFromCart(cartId = cartId, userName=userName)
+            try {
+                cartRepository.deleteMovieFromCart(cartId = cartId, userName=userName)
+                getAllCartMovies(userName)
+            } catch (e: Exception) {
+                Log.e("CartDebug", "Error deleting from cart: ${e.message}")
+            }
         }
     }
-
 }

@@ -1,5 +1,6 @@
 package com.example.moviesapp.ui.screens
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -26,7 +27,13 @@ fun CartScreen(
 ) {
     val cartMovieList = cartScreenViewModel.cartMovieList.observeAsState(listOf())
     val baseUrl = "http://kasimadalan.pe.hu/movies/images/"
-    
+    var totalAmount = remember { mutableIntStateOf(0) }
+
+
+    LaunchedEffect(key1 = true) {
+        cartScreenViewModel.getAllCartMovies("BartugKaan")
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -42,14 +49,27 @@ fun CartScreen(
                 CartItem(
                     item = item,
                     baseUrl = baseUrl,
-                    onIncrease = {  }, // TODO: Increase orderAmount
-                    onDecrease = {  }, // TODO: Decrease orderAmount
-                    onRemove = { cartScreenViewModel.deleteMovieFromCart(item.cartId, "BartugKaan") }
+                    onIncrease = {
+                        item.orderAmount += 1
+                        totalAmount.intValue = cartMovieList.value.sumOf { it.price * it.orderAmount }
+                        cartScreenViewModel.getAllCartMovies("BartugKaan")
+                    },
+                    onDecrease = {
+                        if (item.orderAmount > 1) {
+                            item.orderAmount -= 1
+                            totalAmount.intValue = cartMovieList.value.sumOf { it.price * it.orderAmount }
+                            cartScreenViewModel.getAllCartMovies("BartugKaan")
+                        } else {
+                            cartScreenViewModel.deleteMovieFromCart(item.cartId, "BartugKaan")
+                        }
+                    },
+                    onRemove = { 
+                        cartScreenViewModel.deleteMovieFromCart(item.cartId, "BartugKaan")
+                    }
                 )
                 Divider(modifier = Modifier.padding(vertical = 8.dp))
             }
         }
-
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -62,12 +82,12 @@ fun CartScreen(
                     .fillMaxWidth()
             ) {
                 Text(
-                    text = "Toplam Tutar",
+                    text = "Total Amount",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "₺${cartMovieList.value.sumOf { it.price * it.orderAmount }}",
+                    text = "₺${totalAmount.intValue}",
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
@@ -86,6 +106,8 @@ private fun CartItem(
     onDecrease: () -> Unit,
     onRemove: () -> Unit
 ) {
+    var quantity by remember { mutableStateOf(item.orderAmount) }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -122,21 +144,31 @@ private fun CartItem(
                     modifier = Modifier.padding(top = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(onClick = onDecrease) {
-                        Icon(
-                            imageVector = Icons.Default.KeyboardArrowDown,
-                            contentDescription = "Decrease quantity"
-                        )
-                    }
-                    Text(
-                        text = "${item.orderAmount}",
-                        modifier = Modifier.padding(horizontal = 8.dp),
-                        fontSize = 16.sp
-                    )
-                    IconButton(onClick = onIncrease) {
+                    IconButton(onClick = {
+                        quantity += 1
+                        item.orderAmount = quantity
+                        onIncrease()
+                    }) {
                         Icon(
                             imageVector = Icons.Default.KeyboardArrowUp,
                             contentDescription = "Increase quantity"
+                        )
+                    }
+                    Text(
+                        text = "$quantity",
+                        modifier = Modifier.padding(horizontal = 8.dp),
+                        fontSize = 16.sp
+                    )
+                    IconButton(onClick = {
+                        if (quantity > 1) {
+                            quantity -= 1
+                            item.orderAmount = quantity
+                            onDecrease()
+                        }
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.KeyboardArrowDown,
+                            contentDescription = "Decrease quantity"
                         )
                     }
                 }

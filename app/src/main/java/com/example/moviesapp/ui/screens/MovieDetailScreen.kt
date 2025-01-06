@@ -29,7 +29,7 @@ fun MovieDetail(movie: Movie, movieDetailScreenViewModel: MovieDetailScreenViewM
     val baseUrl = "http://kasimadalan.pe.hu/movies/images/"
 
     LaunchedEffect(key1 = true) {
-        movieDetailScreenViewModel.printCountOfCartMovieList()
+        movieDetailScreenViewModel.getAllCartMovies("BartugKaan")
     }
 
     Column(
