@@ -32,7 +32,7 @@ interface CartDao {
                                @Field("orderAmount") orderAmount:Int,
                                @Field("userName") userName:String) : CRUDResponse
 
-    @POST
+    @POST("movies/deleteMovie.php")
     @FormUrlEncoded
     suspend fun deleteMovieFromCart(@Field("cartId") cartId: Int, @Field("userName") userName:String) : CRUDResponse
 }
