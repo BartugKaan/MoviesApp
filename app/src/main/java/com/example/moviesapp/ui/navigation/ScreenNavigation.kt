@@ -12,23 +12,85 @@ import com.example.moviesapp.ui.screens.MovieDetail
 import com.example.moviesapp.ui.viewmodel.MainScreenViewModel
 import com.example.moviesapp.ui.viewmodel.MovieDetailScreenViewModel
 import com.google.gson.Gson
+import androidx.compose.material3.Scaffold
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.navigation.NavController
+import com.example.moviesapp.ui.components.CustomBottomAppBar
+import com.example.moviesapp.ui.screens.CartScreen
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Text
+import com.example.moviesapp.ui.viewmodel.CartScreenViewModel
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AppScreen(
+    title: String = "Popcorn Deals",
+    content: @Composable (PaddingValues) -> Unit
+) {
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { Text(title) }
+            )
+        },
+        bottomBar = { 
+            CustomBottomAppBar(
+                navController = LocalNavController.current,
+                currentPageIndex = when(LocalNavController.current.currentDestination?.route) {
+                    "mainScreen" -> 0
+                    "movieDetailScreen/{movie}" -> 0
+                    "cartScreen" -> 2
+                    else -> 0
+                }
+            )
+        }
+    ) { paddingValues ->
+        content(paddingValues)
+    }
+}
 
 @Composable
-fun ScreenNavigation(mainScreenViewModel: MainScreenViewModel,
-                     movieDetailScreenViewModel: MovieDetailScreenViewModel){
+fun ScreenNavigation(
+    mainScreenViewModel: MainScreenViewModel,
+    movieDetailScreenViewModel: MovieDetailScreenViewModel,
+    cartScreenViewModel: CartScreenViewModel
+) {
     val navController = rememberNavController()
 
-    NavHost(navController= navController, startDestination = "mainScreen"){
-        composable(route = "mainScreen"){
-            MainScreen(mainScreenViewModel, navController)
-        }
-        composable(
-            route = "movieDetailScreen/{movie}",
-            arguments = listOf(navArgument("movie"){type = NavType.StringType})
-        ){
-            val movieJson = it.arguments?.getString("movie")
-            val movieObject = Gson().fromJson(movieJson, Movie::class.java)
-            MovieDetail(movie = movieObject, movieDetailScreenViewModel = movieDetailScreenViewModel)
+    CompositionLocalProvider(LocalNavController provides navController) {
+        NavHost(navController = navController, startDestination = "mainScreen") {
+            composable(route = "mainScreen") {
+                AppScreen(title = "Popcorn Deals") { paddingValues ->
+                    MainScreen(
+                        mainScreenViewModel = mainScreenViewModel,
+                        navController = navController,
+                        paddingValues = paddingValues
+                    )
+                }
+            }
+            composable(
+                route = "movieDetailScreen/{movie}",
+                arguments = listOf(navArgument("movie") { type = NavType.StringType })
+            ) {
+                val movieJson = it.arguments?.getString("movie")
+                val movieObject = Gson().fromJson(movieJson, Movie::class.java)
+                AppScreen(title = movieObject.name) { paddingValues ->
+                    MovieDetail(movie = movieObject, movieDetailScreenViewModel = movieDetailScreenViewModel)
+                }
+            }
+
+            composable(route = "cartScreen") {
+                AppScreen(title = "Cart") { paddingValues ->
+                    CartScreen(cartScreenViewModel = cartScreenViewModel,paddingValues = paddingValues)
+                }
+            }
         }
     }
+}
+
+private val LocalNavController = staticCompositionLocalOf<NavController> {
+    error("No NavController provided")
 }

@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -32,9 +33,12 @@ import com.example.moviesapp.ui.viewmodel.MainScreenViewModel
 import com.google.gson.Gson
 import com.skydoves.landscapist.glide.GlideImage
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(mainScreenViewModel: MainScreenViewModel, navController: NavController) {
+fun MainScreen(
+    mainScreenViewModel: MainScreenViewModel, 
+    navController: NavController,
+    paddingValues: PaddingValues
+) {
     val movieList = mainScreenViewModel.movieList.observeAsState(listOf())
     val baseUrl = "http://kasimadalan.pe.hu/movies/images/"
 
@@ -42,65 +46,55 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel, navController: NavContr
         mainScreenViewModel.getAllMovies()
     }
 
-
-    Scaffold(
-        topBar = { 
-            CenterAlignedTopAppBar(
-                title = { Text("Popcorn Deals") }
-            ) 
-        },
-        bottomBar = { CustomBottomAppBar(navController, currentPageIndex = 0) }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            if (movieList.value.isEmpty()) {
-                CircularProgressIndicator()
-            } else {
-                Column(
-                    horizontalAlignment = Alignment.Start,
-                    modifier = Modifier.fillMaxWidth()
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        if (movieList.value.isEmpty()) {
+            CircularProgressIndicator()
+        } else {
+            Column(
+                horizontalAlignment = Alignment.Start,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                CarouselSlider(movies = movieList.value)
+                LazyVerticalGrid(
+                    modifier = Modifier.fillMaxSize(),
+                    columns = GridCells.Fixed(count = 2)
                 ) {
-                    CarouselSlider(movies = movieList.value)
-                    LazyVerticalGrid(
-                        modifier = Modifier.fillMaxSize(),
-                        columns = GridCells.Fixed(count = 2)
-                    ) {
-                        items(
-                            //TODO:Custom Movie Cart needed
-                            count = movieList.value.count(),
-                            itemContent = {
-                                var movie = movieList.value[it]
-                                Log.e("Movie", "Movie name ${movie.name}")
-                                Card(modifier = Modifier.padding(all = 5.dp)) {
-                                    Column(
-                                        modifier = Modifier.fillMaxWidth().clickable {
-                                            val movieJson = Gson().toJson(movie)
-                                            navController.navigate(route = "movieDetailScreen/$movieJson")
-                                        }
+                    items(
+                        //TODO:Custom Movie Cart needed
+                        count = movieList.value.count(),
+                        itemContent = {
+                            var movie = movieList.value[it]
+                            Log.e("Movie", "Movie name ${movie.name}")
+                            Card(modifier = Modifier.padding(all = 5.dp)) {
+                                Column(
+                                    modifier = Modifier.fillMaxWidth().clickable {
+                                        val movieJson = Gson().toJson(movie)
+                                        navController.navigate(route = "movieDetailScreen/$movieJson")
+                                    }
+                                ) {
+                                    GlideImage(imageModel = baseUrl + movie.image, modifier = Modifier.size(200.dp,300.dp))
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceEvenly,
+                                        verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        GlideImage(imageModel = baseUrl + movie.image, modifier = Modifier.size(200.dp,300.dp))
-                                        Row(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.SpaceEvenly,
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            Text("${movie.name}", fontSize = 12.sp)
-                                            Button(onClick = {
-                                                //TODO: AddToCart APi will called
-                                            }) {
-                                                Text("Add To Cart", fontSize = 12.sp)
-                                            }
+                                        Text("${movie.name}", fontSize = 12.sp)
+                                        Button(onClick = {
+                                            //TODO: AddToCart APi will called
+                                        }) {
+                                            Text("Add To Cart", fontSize = 12.sp)
                                         }
                                     }
                                 }
                             }
-                        )
-                    }
+                        }
+                    )
                 }
             }
         }
