@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -141,6 +142,42 @@ fun MainScreen(
                             )
                         }
                     }
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+                // Random Movie Generator
+                item {
+                    Box(
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .clip(RoundedCornerShape(25))
+                            .background(color = MaterialTheme.colorScheme.primaryContainer)
+
+                    ) {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = "Can't Decide What to Watch? Let Us Pick for You!",
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                color = MaterialTheme.colorScheme.primary,
+                                textAlign = TextAlign.Center,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Button(onClick = {
+                                val randomMovie = movieList.value.random()
+                                val movieJson = Gson().toJson(randomMovie)
+                                navController.navigate("movieDetailScreen/$movieJson")
+                            }) {
+                                Text(text = "🎲 Suggest Movie")
+                            }
+                            Spacer(modifier = Modifier.height(2.dp))
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
             }
         }
