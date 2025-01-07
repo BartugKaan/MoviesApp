@@ -80,19 +80,43 @@ fun MainScreen(
                         item { CategoryButton("🐉 Fantastic") { } }
                     }
                     Spacer(modifier = Modifier.height(8.dp))
-                    // Carousel Slider
+                    
+                    // Top 5 Popular Movies
                     Text(
-                        text = "Top Rated Movies",
+                        text = "Top 5 Popular Movies",
                         style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier.padding(horizontal = 16.dp),
                         color = MaterialTheme.colorScheme.primary
                     )
+                    
                     CarouselSlider(movies = movieList.value, navController)
-
-                    Spacer(modifier = Modifier.height(4.dp))
+                }
+                
+                item {
+                    Text(
+                        text = "Latest Movies",
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    
+                    Spacer(modifier = Modifier.height(8.dp))
+                    
+                    // Sorted Movies by Year
+                    LazyRow(
+                        contentPadding = PaddingValues(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(movieList.value.sortedByDescending { it.year }) { movie ->
+                            MovieCard(
+                                movie = movie,
+                                navController = navController,
+                                modifier = Modifier.width(200.dp)
+                            )
+                        }
+                    }
                 }
             }
         }
     }
 }
-
