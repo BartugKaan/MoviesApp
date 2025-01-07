@@ -33,16 +33,16 @@ import com.example.moviesapp.data.entity.Movie
 import com.google.gson.Gson
 import com.skydoves.landscapist.glide.GlideImage
 
+
 @Composable
 fun MovieCard(
     movie: Movie,
     navController: NavController,
-    baseUrl: String,
     modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier
-            .height(250.dp)
+            .height(220.dp)
             .clickable {
                 val movieJson = Gson().toJson(movie)
                 navController.navigate("movieDetailScreen/$movieJson")
@@ -51,16 +51,17 @@ fun MovieCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
+            // Movie Poster
             GlideImage(
-                imageModel = baseUrl + movie.image,
+                imageModel = "http://kasimadalan.pe.hu/movies/images/${movie.image}",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
             )
 
+            // Gradient Overlay
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    //Makes more readable area
                     .background(
                         brush = Brush.verticalGradient(
                             colors = listOf(
@@ -71,6 +72,7 @@ fun MovieCard(
                     )
             )
 
+            // Movie Info
             Column(
                 modifier = Modifier
                     .align(Alignment.BottomStart)
