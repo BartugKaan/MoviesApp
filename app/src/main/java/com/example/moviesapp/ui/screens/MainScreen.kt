@@ -60,7 +60,7 @@ fun MainScreen(
                 horizontalAlignment = Alignment.Start,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                CarouselSlider(movies = movieList.value)
+                CarouselSlider(movies = movieList.value, navController)
                 LazyVerticalGrid(
                     modifier = Modifier.fillMaxSize(),
                     columns = GridCells.Fixed(count = 2)
@@ -85,11 +85,6 @@ fun MainScreen(
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Text("${movie.name}", fontSize = 12.sp)
-                                        Button(onClick = {
-                                            //TODO: AddToCart APi will called
-                                        }) {
-                                            Text("Add To Cart", fontSize = 12.sp)
-                                        }
                                     }
                                 }
                             }

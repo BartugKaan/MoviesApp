@@ -1,14 +1,11 @@
 package com.example.moviesapp.ui.components
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -30,10 +27,12 @@ import androidx.compose.ui.Modifier
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.navigation.NavController
+import com.google.gson.Gson
 
 
 @Composable
-fun CarouselSlider(movies: List<Movie>) {
+fun CarouselSlider(movies: List<Movie>, navController: NavController) {
     var currentImageIndex by remember { mutableStateOf(0) }
     val scrollState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
@@ -69,6 +68,10 @@ fun CarouselSlider(movies: List<Movie>) {
             ) {
                 itemsIndexed(bestFiveMovieImage) { index, image ->
                     Card(
+                        onClick = {
+                            val movieJson = Gson().toJson(ratingBasedSortedMovies[index])
+                            navController.navigate(route = "movieDetailScreen/$movieJson")
+                        },
                         modifier = Modifier
                             .height(300.dp)
                             .padding(10.dp)
