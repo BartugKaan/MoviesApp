@@ -22,7 +22,9 @@ import com.example.moviesapp.ui.screens.CartScreen
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
+import com.example.moviesapp.ui.screens.CategoryScreen
 import com.example.moviesapp.ui.viewmodel.CartScreenViewModel
+import com.example.moviesapp.ui.viewmodel.CategoryScreenViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,7 +58,8 @@ fun AppScreen(
 fun ScreenNavigation(
     mainScreenViewModel: MainScreenViewModel,
     movieDetailScreenViewModel: MovieDetailScreenViewModel,
-    cartScreenViewModel: CartScreenViewModel
+    cartScreenViewModel: CartScreenViewModel,
+    categoryScreenViewModel: CategoryScreenViewModel
 ) {
     val navController = rememberNavController()
 
@@ -79,6 +82,22 @@ fun ScreenNavigation(
                 val movieObject = Gson().fromJson(movieJson, Movie::class.java)
                 AppScreen(title = movieObject.name) { paddingValues ->
                     MovieDetail(movie = movieObject, movieDetailScreenViewModel = movieDetailScreenViewModel)
+                }
+            }
+            composable(
+                route = "categoryScreen/{category}",
+                arguments = listOf(navArgument("category"){type = NavType.StringType})
+            ){
+                val categoryName = it.arguments?.getString("category")
+                if (categoryName != null) {
+                    AppScreen(title = categoryName ) { paddingValues ->
+                        CategoryScreen(
+                            categoryScreenViewModel = categoryScreenViewModel,
+                            navController = navController,
+                            paddingValues = paddingValues,
+                            categoryName = categoryName
+                        )
+                    }
                 }
             }
 

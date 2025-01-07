@@ -16,6 +16,7 @@ import com.example.moviesapp.ui.navigation.ScreenNavigation
 import com.example.moviesapp.ui.screens.MainScreen
 import com.example.moviesapp.ui.theme.MoviesAppTheme
 import com.example.moviesapp.ui.viewmodel.CartScreenViewModel
+import com.example.moviesapp.ui.viewmodel.CategoryScreenViewModel
 import com.example.moviesapp.ui.viewmodel.MainScreenViewModel
 import com.example.moviesapp.ui.viewmodel.MovieDetailScreenViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,6 +26,7 @@ class MainActivity : ComponentActivity() {
     private val mainScreenViewModel: MainScreenViewModel by viewModels()
     private val  movieDetailScreenViewModel: MovieDetailScreenViewModel by viewModels()
     private val cartScreenViewModel: CartScreenViewModel by viewModels()
+    private val  categoryScreenViewModel: CategoryScreenViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -33,7 +35,8 @@ class MainActivity : ComponentActivity() {
                 ScreenNavigation(
                     mainScreenViewModel = mainScreenViewModel,
                     movieDetailScreenViewModel = movieDetailScreenViewModel,
-                    cartScreenViewModel = cartScreenViewModel
+                    cartScreenViewModel = cartScreenViewModel,
+                    categoryScreenViewModel = categoryScreenViewModel
                 )
             }
         }

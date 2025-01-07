@@ -43,7 +43,6 @@ fun MainScreen(
     paddingValues: PaddingValues
 ) {
     val movieList = mainScreenViewModel.movieList.observeAsState(listOf())
-    val baseUrl = "http://kasimadalan.pe.hu/movies/images/"
 
     LaunchedEffect(key1 = true) {
         mainScreenViewModel.getAllMovies()
@@ -73,11 +72,21 @@ fun MainScreen(
                         contentPadding = PaddingValues(horizontal = 16.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        item { CategoryButton("🎬All") { } }
-                        item { CategoryButton("⚔️ Action") { } }
-                        item { CategoryButton("🎭 Drama") { } }
-                        item { CategoryButton("👽 Sci-Fi") { } }
-                        item { CategoryButton("🐉 Fantastic") { } }
+                        item { CategoryButton("🎬All") {
+                            navController.navigate("categoryScreen/All")
+                        } }
+                        item { CategoryButton("⚔️ Action") {
+                            navController.navigate("categoryScreen/Action")
+                        } }
+                        item { CategoryButton("🎭 Drama") {
+                            navController.navigate("categoryScreen/Drama")
+                        } }
+                        item { CategoryButton("👽 Sci-Fi") {
+                            navController.navigate("categoryScreen/Science Fiction")
+                        } }
+                        item { CategoryButton("🐉 Fantastic") {
+                            navController.navigate("categoryScreen/Fantastic")
+                        } }
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     
