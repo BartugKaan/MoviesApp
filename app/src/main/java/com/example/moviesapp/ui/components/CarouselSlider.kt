@@ -1,5 +1,6 @@
 package com.example.moviesapp.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,66 +30,69 @@ import kotlinx.coroutines.launch
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.navigation.NavController
 import com.google.gson.Gson
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 
 
 @Composable
-fun CarouselSlider(movies: List<Movie>, navController: NavController) {
-    var currentImageIndex by remember { mutableStateOf(0) }
-    val scrollState = rememberLazyListState()
-    val coroutineScope = rememberCoroutineScope()
-    val ratingBasedSortedMovies = movies.sortedByDescending { it.rating }
+fun CarouselSlider(
+    movies: List<Movie>,
+    navController: NavController,
+    modifier: Modifier = Modifier
+) {
+    var currentPage by remember { mutableStateOf(0) }
+    val topMovies = movies.take(5)
     val baseUrl = "http://kasimadalan.pe.hu/movies/images/"
-    val bestFiveMovieImage = listOf(
-        baseUrl + ratingBasedSortedMovies[0].image,
-        baseUrl + ratingBasedSortedMovies[1].image,
-        baseUrl + ratingBasedSortedMovies[2].image,
-        baseUrl + ratingBasedSortedMovies[3].image,
-        baseUrl + ratingBasedSortedMovies[4].image,
-    )
 
-    LaunchedEffect(key1 = true) {
-        coroutineScope.launch {
-            while (true) {
-                delay(5000)
-                if (currentImageIndex == bestFiveMovieImage.size - 1) currentImageIndex = 0
-                else currentImageIndex++
-                scrollState.animateScrollToItem(currentImageIndex)
-            }
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(5000)
+            currentPage = (currentPage + 1) % topMovies.size
         }
     }
-
     Column(
-        modifier = Modifier.height(350.dp).padding(vertical = 0.dp)
+        modifier = modifier
+            .fillMaxWidth()
+            .height(250.dp)
+            .padding(vertical = 8.dp)
     ) {
-        Box(modifier = Modifier.padding(16.dp)) {
-            LazyRow(
-                state = scrollState,
-                modifier = Modifier.fillMaxSize(),
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+        ) {
+            MovieCard(
+                movie = topMovies[currentPage],
+                navController = navController,
+                modifier = Modifier.fillMaxWidth(),
+            )
+            
+            // Dots Indicator
+            Row(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                itemsIndexed(bestFiveMovieImage) { index, image ->
-                    Card(
-                        onClick = {
-                            val movieJson = Gson().toJson(ratingBasedSortedMovies[index])
-                            navController.navigate(route = "movieDetailScreen/$movieJson")
-                        },
+                topMovies.forEachIndexed { index, _ ->
+                    Box(
                         modifier = Modifier
-                            .height(300.dp)
-                            .padding(10.dp)
-                            .graphicsLayer {
-                                scaleX = if (currentImageIndex == index) 1.1f else 1f
-                                scaleY = if (currentImageIndex == index) 1.1f else 1f
-                            },
-                        elevation = CardDefaults.cardElevation(
-                            defaultElevation = 2.dp
-                        )
-                    ) {
-                        GlideImage(
-                            imageModel = image,
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.width(200.dp)
-                        )
-                    }
+                            .size(8.dp)
+                            .clip(CircleShape)
+                            .background(
+                                if (index == currentPage) 
+                                    MaterialTheme.colorScheme.primary 
+                                else 
+                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+                            )
+                    )
                 }
             }
         }
