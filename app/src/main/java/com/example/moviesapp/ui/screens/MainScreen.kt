@@ -61,14 +61,13 @@ fun MainScreen(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
-            ) {  }
-            CircularProgressIndicator()
+            ) { CircularProgressIndicator() }
         } else {
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
             ) {
                 item {
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
                     LazyRow(
                         contentPadding = PaddingValues(horizontal = 16.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -81,21 +80,21 @@ fun MainScreen(
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     
-                    // Top 5 Popular Movies
+                    // Displays Top 5 Popular Movies
                     Text(
                         text = "Top 5 Popular Movies",
-                        style = MaterialTheme.typography.titleLarge,
+                        style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(horizontal = 16.dp),
                         color = MaterialTheme.colorScheme.primary
                     )
                     
                     CarouselSlider(movies = movieList.value, navController)
                 }
-                
+                //Displays Newest movies to oldest
                 item {
                     Text(
-                        text = "Latest Movies",
-                        style = MaterialTheme.typography.titleLarge,
+                        text = "Newest Movies to Oldest",
+                        style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(horizontal = 16.dp),
                         color = MaterialTheme.colorScheme.primary
                     )
@@ -108,6 +107,33 @@ fun MainScreen(
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         items(movieList.value.sortedByDescending { it.year }) { movie ->
+                            MovieCard(
+                                movie = movie,
+                                navController = navController,
+                                modifier = Modifier.width(200.dp)
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(4.dp))
+                }
+                //Displays Christopher Nolan's movies
+                item {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Best Of Christopher Nolan",
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    val nolanMovies = movieList.value
+                        .filter { it.director == "Christopher Nolan" }
+                        .sortedByDescending { it.rating }
+                    LazyRow(
+                        contentPadding = PaddingValues(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(nolanMovies) { movie ->
                             MovieCard(
                                 movie = movie,
                                 navController = navController,
