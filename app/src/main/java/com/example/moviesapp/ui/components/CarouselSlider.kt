@@ -58,7 +58,7 @@ fun CarouselSlider(movies: List<Movie>, navController: NavController) {
     }
 
     Column(
-        modifier = Modifier.height(400.dp)
+        modifier = Modifier.height(350.dp).padding(vertical = 0.dp)
     ) {
         Box(modifier = Modifier.padding(16.dp)) {
             LazyRow(
