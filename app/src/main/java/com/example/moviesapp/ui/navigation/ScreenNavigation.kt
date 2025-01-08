@@ -81,7 +81,7 @@ fun ScreenNavigation(
                 val movieJson = it.arguments?.getString("movie")
                 val movieObject = Gson().fromJson(movieJson, Movie::class.java)
                 AppScreen(title = movieObject.name) { paddingValues ->
-                    MovieDetail(movie = movieObject, movieDetailScreenViewModel = movieDetailScreenViewModel)
+                    MovieDetail(movie = movieObject, movieDetailScreenViewModel = movieDetailScreenViewModel, navController = navController)
                 }
             }
             composable(

@@ -40,7 +40,8 @@ class MovieDetailScreenViewModel @Inject constructor(var cartRepository: CartRep
         rating: Double,
         year: Int,
         director: String,
-        description: String
+        description: String,
+        orderAmount: Int
     ) {
         CoroutineScope(Dispatchers.Main).launch {
             try {
@@ -53,7 +54,7 @@ class MovieDetailScreenViewModel @Inject constructor(var cartRepository: CartRep
                     year = year,
                     director = director,
                     description = description,
-                    orderAmount = 1,
+                    orderAmount = orderAmount,
                     userName = userName
                 )
                 getAllCartMovies(userName)
