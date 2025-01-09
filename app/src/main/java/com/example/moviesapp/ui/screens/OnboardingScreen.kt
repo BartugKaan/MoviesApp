@@ -2,43 +2,33 @@ package com.example.moviesapp.ui.screens
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.Button
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.moviesapp.R
 import com.example.moviesapp.data.entity.OnboardingCardData
 import com.example.moviesapp.ui.components.OnboardingCardContent
+import com.example.moviesapp.ui.components.OnboardingCardWithTf
 import com.example.moviesapp.ui.theme.MoviesAppTheme
 import kotlinx.coroutines.launch
 
-
-
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun OnboardingScreen() {
-    val pagerState = rememberPagerState(pageCount = { 3 })
+fun OnboardingScreen(navController: NavController) {
+    val pagerState = rememberPagerState(pageCount = { 4 })
     val coroutineScope = rememberCoroutineScope()
+    
     val onboardingCards = listOf(
         OnboardingCardData(
             imageResource = R.drawable.onboarding1,
@@ -57,49 +47,63 @@ fun OnboardingScreen() {
         )
     )
 
-
-    Scaffold { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            verticalArrangement = Arrangement.SpaceEvenly,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            HorizontalPager(
-                verticalAlignment = Alignment.CenterVertically,
-                state = pagerState,
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-            ) { page ->
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.weight(1f)
+        ) { page ->
+            if (page < 3) {
                 val onboardingCard = onboardingCards[page]
                 OnboardingCardContent(
                     imageResource = onboardingCard.imageResource,
                     title = onboardingCard.title,
-                    description = onboardingCard.description,
+                    description = onboardingCard.description
+                )
+            } else {
+                OnboardingCardWithTf(navController)
+            }
+        }
+
+        // Dots indicator
+        Row(
+            modifier = Modifier
+                .padding(bottom = 32.dp)
+                .height(50.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            repeat(pagerState.pageCount) { iteration ->
+                val color = if (pagerState.currentPage == iteration) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
+                }
+                Box(
+                    modifier = Modifier
+                        .padding(4.dp)
+                        .size(10.dp)
+                        .background(color = color, shape = CircleShape)
                 )
             }
-            Button(
-                onClick = {
-                    coroutineScope.launch {
-                        if (pagerState.currentPage < onboardingCards.size - 1) {
-                            pagerState.scrollToPage(pagerState.currentPage + 1)
-                        }
+        }
+
+        Button(
+            onClick = {
+                coroutineScope.launch {
+                    if (pagerState.currentPage < pagerState.pageCount - 1) {
+                        pagerState.animateScrollToPage(pagerState.currentPage + 1)
                     }
-                },
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Text("Next")
-            }
+                }
+            },
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            enabled = pagerState.currentPage < 3
+        ) {
+            Text(text = "Next")
         }
     }
 }
 
-@Preview
-@Composable
-fun PreviewOnboardingScreen() {
-    MoviesAppTheme {
-        OnboardingScreen()
-    }
-}
