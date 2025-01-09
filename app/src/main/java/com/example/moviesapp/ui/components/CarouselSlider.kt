@@ -49,7 +49,6 @@ fun CarouselSlider(
 ) {
     var currentPage by remember { mutableStateOf(0) }
     val topMovies = movies.take(5)
-    val baseUrl = "http://kasimadalan.pe.hu/movies/images/"
 
     LaunchedEffect(Unit) {
         while (true) {
