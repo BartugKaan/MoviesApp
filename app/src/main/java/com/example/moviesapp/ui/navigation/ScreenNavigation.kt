@@ -22,9 +22,18 @@ import com.example.moviesapp.ui.screens.CartScreen
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
+import com.example.moviesapp.datastore.AppPref
 import com.example.moviesapp.ui.screens.CategoryScreen
+import com.example.moviesapp.ui.screens.OnboardingScreen
 import com.example.moviesapp.ui.viewmodel.CartScreenViewModel
 import com.example.moviesapp.ui.viewmodel.CategoryScreenViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,9 +71,31 @@ fun ScreenNavigation(
     categoryScreenViewModel: CategoryScreenViewModel
 ) {
     val navController = rememberNavController()
+    val context = LocalContext.current
+    val ap = AppPref(context)
+    val isOnboardingSeen = remember { mutableStateOf(false) }
+
+
+    LaunchedEffect(key1 = true) {
+        CoroutineScope(Dispatchers.Main).launch {
+            isOnboardingSeen.value = ap.getOnboardingPreferences()
+        }
+    }
 
     CompositionLocalProvider(LocalNavController provides navController) {
-        NavHost(navController = navController, startDestination = "mainScreen") {
+        var startDestination = ""
+        if (isOnboardingSeen.value){
+            startDestination = "mainScreen"
+        }
+        else{
+            startDestination = "onboardingScreen"
+        }
+
+
+        NavHost(navController = navController, startDestination = startDestination) {
+            composable(route = "onboardingScreen"){
+                OnboardingScreen(navController)
+            }
             composable(route = "mainScreen") {
                 AppScreen(title = "Popcorn Deals") { paddingValues ->
                     MainScreen(
