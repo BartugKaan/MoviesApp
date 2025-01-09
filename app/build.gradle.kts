@@ -78,6 +78,9 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.6.1")
     //Glide
     implementation ("com.github.skydoves:landscapist-glide:1.4.4")
-    //CarouselCard
-    implementation("io.coil-kt:coil-compose:2.4.0")
+    //Preferences Data Store
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.5.1")
+    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+    api("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
 }
