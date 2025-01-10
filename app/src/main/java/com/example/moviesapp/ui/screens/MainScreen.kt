@@ -63,14 +63,7 @@ fun MainScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         if (movieList.value.isEmpty()) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                LoadingAnimation()
-                //CircularProgressIndicator()
-            }
+            LoadingAnimation()
         } else {
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
