@@ -38,7 +38,7 @@ fun CustomBottomAppBar(navController: NavController, currentPageIndex: Int) {
         NavigationBarItem(
             icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
             selected = currentPageIndex == 3,
-            onClick = { /* TODO */ }
+            onClick = { navController.navigate("profileScreen") }
         )
     }
 }

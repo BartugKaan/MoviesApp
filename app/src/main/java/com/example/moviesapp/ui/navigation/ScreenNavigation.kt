@@ -29,6 +29,7 @@ import androidx.compose.ui.platform.LocalContext
 import com.example.moviesapp.datastore.AppPref
 import com.example.moviesapp.ui.screens.CategoryScreen
 import com.example.moviesapp.ui.screens.OnboardingScreen
+import com.example.moviesapp.ui.screens.ProfileScreen
 import com.example.moviesapp.ui.viewmodel.CartScreenViewModel
 import com.example.moviesapp.ui.viewmodel.CategoryScreenViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -54,6 +55,7 @@ fun AppScreen(
                     "mainScreen" -> 0
                     "movieDetailScreen/{movie}" -> 0
                     "cartScreen" -> 2
+                    "profileScreen" -> 3
                     else -> 0
                 }
             )
@@ -131,12 +133,17 @@ fun ScreenNavigation(
                     }
                 }
             }
-
             composable(route = "cartScreen") {
                 AppScreen(title = "Cart") { paddingValues ->
                     CartScreen(cartScreenViewModel = cartScreenViewModel,paddingValues = paddingValues)
                 }
             }
+            composable(route = "profileScreen"){
+                AppScreen(title = "Profile") {
+                    ProfileScreen(navController = navController)
+                }
+            }
+
         }
     }
 }
