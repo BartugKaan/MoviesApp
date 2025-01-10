@@ -21,10 +21,14 @@ import com.example.moviesapp.ui.components.CustomBottomAppBar
 import com.example.moviesapp.ui.screens.CartScreen
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import com.example.moviesapp.datastore.AppPref
 import com.example.moviesapp.ui.screens.CategoryScreen
@@ -45,7 +49,18 @@ fun AppScreen(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text(title) }
+                title = {
+                    Text(
+                        text = "Popcorn Deals",
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary
+                )
             )
         },
         bottomBar = { 

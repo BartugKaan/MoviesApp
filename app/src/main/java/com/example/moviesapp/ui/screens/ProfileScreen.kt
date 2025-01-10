@@ -37,7 +37,7 @@ fun ProfileScreen(navController: NavController) {
             verticalArrangement = Arrangement.spacedBy(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(48.dp))
+            Spacer(modifier = Modifier.height(52.dp))
 
             // Profile Icon
             Icon(
@@ -94,7 +94,7 @@ fun ProfileScreen(navController: NavController) {
                 ),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Log out")
+                Text("Log out", color = Color.White)
             }
 
             Spacer(modifier = Modifier.height(32.dp))
