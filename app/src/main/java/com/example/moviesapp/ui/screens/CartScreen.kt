@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.sp
 import com.example.moviesapp.data.entity.MovieCart
 import com.example.moviesapp.datastore.AppPref
 import com.example.moviesapp.ui.components.CartItem
+import com.example.moviesapp.ui.components.LottieAnimation
 import com.example.moviesapp.ui.viewmodel.CartScreenViewModel
 import com.skydoves.landscapist.glide.GlideImage
 
@@ -46,6 +47,18 @@ fun CartScreen(
                 .weight(1f)
                 .fillMaxWidth()
         ) {
+            if (cartItems.value.isEmpty()){
+                item {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        LottieAnimation("https://lottie.host/dfafec30-2889-4fbf-b33e-2b59b0cec5c8/IYN7ROZzrM.lottie")
+                        Text("Your cart empty!", fontSize = 22.sp, fontWeight = FontWeight.Bold)
+                    }
+                }
+            }
             items(cartItems.value) { movie ->
                 CartItem(
                     movie = movie,
