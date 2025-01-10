@@ -25,15 +25,52 @@ class CartScreenViewModel @Inject constructor(var cartRepository: CartRepository
 
     // Loads cart data from repository and combines same movies - ?
     fun loadCart() {
-        if (userName.value.isNullOrEmpty()) return
+        val currentUserName = userName.value ?: return
         
         CoroutineScope(Dispatchers.Main).launch {
             try {
-                cartMovieList.value = cartRepository.getMoviesFromCart(userName.value!!)
+                val cartItems = cartRepository.getMoviesFromCart(currentUserName)
+                
+                // Group same movies
+                val groupedMovies = cartItems.groupBy { it.name }
+
+                //Calculate total orderAmount for group and crate new single Moviecart
+                val mergedMovies = groupedMovies.map { (_, movies) ->
+                    val firstMovie = movies.first()
+                    val totalAmount = movies.sumOf { it.orderAmount }
+                    
+                    if (movies.size > 1) {
+                        //Delete same movies except index 1
+                        movies.forEach {
+                            cartRepository.deleteMovieFromCart(it.cartId, currentUserName)
+                        }
+
+                        //Save single movie with new orderAmount
+                        cartRepository.addMovieToCart(
+                            name = firstMovie.name,
+                            image = firstMovie.image,
+                            price = firstMovie.price,
+                            category = firstMovie.category,
+                            rating = firstMovie.rating,
+                            year = firstMovie.year,
+                            director = firstMovie.director,
+                            description = firstMovie.description,
+                            orderAmount = totalAmount,
+                            userName = currentUserName
+                        )
+                    }
+
+                    // return first index movie with new orderAmount
+                    firstMovie.copy(orderAmount = totalAmount)
+                }
+                
+                cartMovieList.value = mergedMovies
                 calculateTotal()
+                
             } catch (e: Exception) {
                 Log.e("CartError", "Error loading cart: ${e.message}")
                 cartMovieList.value = emptyList()
+                totalAmount.value = 0
             }
         }
     }

@@ -56,7 +56,7 @@ fun CartScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         LottieAnimation("https://lottie.host/dfafec30-2889-4fbf-b33e-2b59b0cec5c8/IYN7ROZzrM.lottie")
-                        Text("Your cart empty!", fontSize = 22.sp, fontWeight = FontWeight.Bold)
+                        Text("Your cart is empty!", fontSize = 22.sp, fontWeight = FontWeight.Bold)
                     }
                 }
             }
