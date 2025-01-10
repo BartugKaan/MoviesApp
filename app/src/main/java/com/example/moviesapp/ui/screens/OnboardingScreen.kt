@@ -37,8 +37,8 @@ fun OnboardingScreen(navController: NavController) {
         ),
         OnboardingCardData(
             imageResource = R.drawable.onboarding2,
-            title = "Create Your Wishlist",
-            description = "Save the movies you love to your wishlist and access them anytime with ease."
+            title = "Find Best Movies Easily",
+            description = "Filter the wide selection of movies based on categories or movie ratings."
         ),
         OnboardingCardData(
             imageResource = R.drawable.onboarding3,
