@@ -15,16 +15,19 @@ import javax.inject.Inject
 @HiltViewModel
 class MovieDetailScreenViewModel @Inject constructor(var cartRepository: CartRepository): ViewModel() {
     var cartMovieList = MutableLiveData<List<MovieCart>>()
-    var userName = "BartugKaanTest"
+    var userName = MutableLiveData<String>()
 
-    init {
-        getAllCartMovies(userName)
+    fun setUserName(name: String) {
+        userName.value = name
+        getAllCartMovies()
     }
 
-    fun getAllCartMovies(userName: String){
-        CoroutineScope(Dispatchers.Main).launch{
+    private fun getAllCartMovies() {
+        val currentUserName = userName.value ?: return
+        
+        CoroutineScope(Dispatchers.Main).launch {
             try {
-                cartMovieList.value = cartRepository.getMoviesFromCart(userName)
+                cartMovieList.value = cartRepository.getMoviesFromCart(currentUserName)
             } catch (e: Exception) {
                 Log.e("CartError", "Error loading cart: ${e.message}")
                 cartMovieList.value = emptyList()
@@ -33,16 +36,12 @@ class MovieDetailScreenViewModel @Inject constructor(var cartRepository: CartRep
     }
 
     fun addToCart(
-        name: String,
-        image: String,
-        price: Int,
-        category: String,
-        rating: Double,
-        year: Int,
-        director: String,
-        description: String,
+        name: String, image: String, price: Int, category: String,
+        rating: Double, year: Int, director: String, description: String,
         orderAmount: Int
     ) {
+        val currentUserName = userName.value ?: return
+
         CoroutineScope(Dispatchers.Main).launch {
             try {
                 cartRepository.addMovieToCart(
@@ -55,9 +54,8 @@ class MovieDetailScreenViewModel @Inject constructor(var cartRepository: CartRep
                     director = director,
                     description = description,
                     orderAmount = orderAmount,
-                    userName = userName
+                    userName = currentUserName
                 )
-                getAllCartMovies(userName)
             } catch (e: Exception) {
                 Log.e("CartError", "Error adding to cart: ${e.message}")
             }

@@ -16,12 +16,14 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.moviesapp.R
 import com.example.moviesapp.data.entity.Movie
+import com.example.moviesapp.datastore.AppPref
 import com.example.moviesapp.ui.viewmodel.MovieDetailScreenViewModel
 import com.skydoves.landscapist.glide.GlideImage
 
@@ -34,7 +36,13 @@ fun MovieDetail(
 ) {
     var orderAmount by remember { mutableStateOf(1) }
     val baseUrl = "http://kasimadalan.pe.hu/movies/images/"
-    var isFavorite by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val ap = AppPref(context)
+
+    LaunchedEffect(key1 = true) {
+        val userName = ap.getUserName()
+        movieDetailScreenViewModel.setUserName(userName)
+    }
 
     Column(
         modifier = modifier
