@@ -37,7 +37,7 @@ class CartScreenViewModel @Inject constructor(var cartRepository: CartRepository
                 //Calculate total orderAmount for group and crate new single Moviecart
                 val mergedMovies = groupedMovies.map { (_, movies) ->
                     val firstMovie = movies.first()
-                    val totalAmount = movies.sumOf { it.orderAmount }
+                    val totalOrderAmount = movies.sumOf { it.orderAmount }
                     
                     if (movies.size > 1) {
                         //Delete same movies except index 1
@@ -55,13 +55,13 @@ class CartScreenViewModel @Inject constructor(var cartRepository: CartRepository
                             year = firstMovie.year,
                             director = firstMovie.director,
                             description = firstMovie.description,
-                            orderAmount = totalAmount,
+                            orderAmount = totalOrderAmount,
                             userName = currentUserName
                         )
                     }
 
                     // return first index movie with new orderAmount
-                    firstMovie.copy(orderAmount = totalAmount)
+                    firstMovie.copy(orderAmount = totalOrderAmount)
                 }
                 
                 cartMovieList.value = mergedMovies
@@ -161,37 +161,4 @@ class CartScreenViewModel @Inject constructor(var cartRepository: CartRepository
         }
     }
 
-    // Adds movie to cart, combining with existing entries if any
-    fun addToCart(name: String, image: String, price: Int, category: String,
-                 rating: Double, year: Int, director: String, description: String) {
-        val currentUserName = userName.value ?: return
-        
-        CoroutineScope(Dispatchers.Main).launch {
-            try {
-                val allMovies = cartRepository.getMoviesFromCart(currentUserName)
-                val existingMovies = allMovies.filter { it.name == name }
-                val currentQuantity = existingMovies.sumOf { it.orderAmount }
-
-                existingMovies.forEach {
-                    cartRepository.deleteMovieFromCart(it.cartId, currentUserName)
-                }
-
-                cartRepository.addMovieToCart(
-                    name = name,
-                    image = image,
-                    price = price,
-                    category = category,
-                    rating = rating,
-                    year = year,
-                    director = director,
-                    description = description,
-                    orderAmount = currentQuantity + 1,
-                    userName = currentUserName
-                )
-                loadCart()
-            } catch (e: Exception) {
-                Log.e("CartError", "Error adding to cart: ${e.message}")
-            }
-        }
-    }
 }
