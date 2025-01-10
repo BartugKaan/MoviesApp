@@ -1,5 +1,6 @@
 package com.example.moviesapp.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -16,8 +17,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.moviesapp.datastore.AppPref
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -27,6 +26,7 @@ fun OnboardingCardWithTf(navController: NavController) {
     val ap = AppPref(context)
     var usernameTf = remember { mutableStateOf("") }
     var showError by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
 
     Column(
         modifier = Modifier
@@ -119,12 +119,12 @@ fun OnboardingCardWithTf(navController: NavController) {
                 if(usernameTf.value.isEmpty()){
                     showError = true
                 }
-                else{
-                    CoroutineScope(Dispatchers.Main).launch {
+                else {
+                    scope.launch {
                         ap.saveUserName(usernameTf.value)
                         ap.saveOnboardingPreferences(true)
+                        navController.navigate("mainScreen")
                     }
-                    navController.navigate("mainScreen")
                 }
             },
             modifier = Modifier
