@@ -39,6 +39,7 @@ fun CustomBottomAppBar(navController: NavController, currentPageIndex: Int) {
             selected = currentPageIndex == 0,
             onClick = { navController.navigate("mainScreen") }
         )
+        /*
         NavigationBarItem(
             icon = { 
                 Icon(
@@ -52,6 +53,7 @@ fun CustomBottomAppBar(navController: NavController, currentPageIndex: Int) {
             selected = currentPageIndex == 1,
             onClick = { /* TODO */ }
         )
+        */
         NavigationBarItem(
             icon = { 
                 Icon(
