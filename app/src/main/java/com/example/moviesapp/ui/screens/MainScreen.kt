@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,9 +29,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.moviesapp.data.entity.Movie
 import com.example.moviesapp.ui.components.CarouselSlider
 import com.example.moviesapp.ui.components.CategoryButton
+import com.example.moviesapp.ui.components.LoadingAnimation
 import com.example.moviesapp.ui.components.MovieCard
 import com.example.moviesapp.ui.viewmodel.MainScreenViewModel
 import com.google.gson.Gson
@@ -61,7 +67,10 @@ fun MainScreen(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
-            ) { CircularProgressIndicator() }
+            ) {
+                LoadingAnimation()
+                //CircularProgressIndicator()
+            }
         } else {
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
