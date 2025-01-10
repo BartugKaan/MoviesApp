@@ -10,10 +10,13 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.moviesapp.data.entity.MovieCart
+import com.example.moviesapp.datastore.AppPref
+import com.example.moviesapp.ui.components.CartItem
 import com.example.moviesapp.ui.viewmodel.CartScreenViewModel
 import com.skydoves.landscapist.glide.GlideImage
 
@@ -22,11 +25,14 @@ fun CartScreen(
     paddingValues: PaddingValues,
     cartScreenViewModel: CartScreenViewModel
 ) {
+    val context = LocalContext.current
+    val ap = AppPref(context)
     val cartItems = cartScreenViewModel.cartMovieList.observeAsState(initial = emptyList())
     val totalAmount = cartScreenViewModel.totalAmount.observeAsState(initial = 0)
     
     LaunchedEffect(key1 = true) {
-        cartScreenViewModel.loadCart()
+        val userName = ap.getUserName()
+        cartScreenViewModel.setUserName(userName)
     }
     
     Column(
@@ -93,72 +99,3 @@ fun CartScreen(
     }
 }
 
-@Composable
-private fun CartItem(
-    movie: MovieCart,
-    onQuantityChange: (Int) -> Unit,
-    onRemove: () -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Movie Image
-            GlideImage(
-                imageModel = "http://kasimadalan.pe.hu/movies/images/${movie.image}",
-                modifier = Modifier.size(80.dp)
-            )
-            
-            // Movie Details
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 8.dp)
-            ) {
-                Text(
-                    text = movie.name,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = "₺${movie.price}",
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
-            
-            // Quantity Controls
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                IconButton(onClick = { onQuantityChange(movie.orderAmount - 1) }) {
-                    Text("-")
-                }
-                
-                Text(
-                    text = movie.orderAmount.toString(),
-                    modifier = Modifier.padding(horizontal = 8.dp)
-                )
-                
-                IconButton(onClick = { onQuantityChange(movie.orderAmount + 1) }) {
-                    Text("+")
-                }
-                
-                IconButton(onClick = onRemove) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "Remove item",
-                        tint = MaterialTheme.colorScheme.error
-                    )
-                }
-            }
-        }
-    }
-}

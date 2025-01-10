@@ -13,44 +13,38 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CartScreenViewModel @Inject constructor(var cartRepository: CartRepository): ViewModel() {
-    // LiveData to observe cart items and total amount in the UI
+    // LiveData for  cart items, userName and total amount in the UI
     var cartMovieList = MutableLiveData<List<MovieCart>>()
     var totalAmount = MutableLiveData<Int>(0)
-    private val userName = "BartugKaanTest"
+    var userName = MutableLiveData<String>()
 
     init {
         loadCart()
     }
 
-    // Combines multiple entries of the same movie into a single entry with summed quantities
-    private fun consolidateMovies(movies: List<MovieCart>): List<MovieCart> {
-        return movies.groupBy { it.name }
-            .map { (_, sameMovies) ->
-                sameMovies.first().copy(
-                    orderAmount = sameMovies.sumOf { it.orderAmount }
-                )
-            }
-    }
 
-    // Loads cart data from repository and combines same movies
+    // Loads cart data from repository and combines same movies - ?
     fun loadCart() {
+        if (userName.value.isNullOrEmpty()) return
+        
         CoroutineScope(Dispatchers.Main).launch {
             try {
-                val movies = cartRepository.getMoviesFromCart(userName)
-                cartMovieList.value = consolidateMovies(movies)
-                updateTotalAmount()
+                cartMovieList.value = cartRepository.getMoviesFromCart(userName.value!!)
+                calculateTotal()
             } catch (e: Exception) {
                 Log.e("CartError", "Error loading cart: ${e.message}")
                 cartMovieList.value = emptyList()
-                totalAmount.value = 0
             }
         }
     }
 
-    // Updates the total amount based on current cart items
-    private fun updateTotalAmount() {
-        val total = cartMovieList.value?.sumOf { it.price * it.orderAmount } ?: 0
-        totalAmount.value = total
+    private fun calculateTotal() {
+        totalAmount.value = cartMovieList.value?.sumOf { it.price * it.orderAmount } ?: 0
+    }
+
+    fun setUserName(name: String) {
+        userName.value = name
+        loadCart()
     }
 
     // Updates quantity of a movie in cart, removes if quantity <= 0
@@ -60,17 +54,17 @@ class CartScreenViewModel @Inject constructor(var cartRepository: CartRepository
             return
         }
 
+        // Live data null check
         val movie = cartMovieList.value?.find { it.cartId == cartId } ?: return
+        val currentUserName = userName.value ?: return
         
         CoroutineScope(Dispatchers.Main).launch {
             try {
-                // First delete all entries of this movie
-                val allMovies = cartRepository.getMoviesFromCart(userName)
+                val allMovies = cartRepository.getMoviesFromCart(currentUserName)
                 allMovies.filter { it.name == movie.name }.forEach {
-                    cartRepository.deleteMovieFromCart(it.cartId, userName)
+                    cartRepository.deleteMovieFromCart(it.cartId, currentUserName)
                 }
                 
-                // Add single entry with new quantity
                 cartRepository.addMovieToCart(
                     name = movie.name,
                     image = movie.image,
@@ -81,7 +75,7 @@ class CartScreenViewModel @Inject constructor(var cartRepository: CartRepository
                     director = movie.director,
                     description = movie.description,
                     orderAmount = newQuantity,
-                    userName = userName
+                    userName = currentUserName
                 )
                 loadCart()
             } catch (e: Exception) {
@@ -90,16 +84,17 @@ class CartScreenViewModel @Inject constructor(var cartRepository: CartRepository
         }
     }
 
-    // Removes all entries of a movie from cart
+    // Removes all movies of a movie from cart
     fun removeFromCart(cartId: Int) {
         val movieToRemove = cartMovieList.value?.find { it.cartId == cartId } ?: return
+        val currentUserName = userName.value ?: return
         
         CoroutineScope(Dispatchers.Main).launch {
             try {
                 //Deletes that movie with all quantities
-                val allMovies = cartRepository.getMoviesFromCart(userName)
+                val allMovies = cartRepository.getMoviesFromCart(currentUserName)
                 allMovies.filter { it.name == movieToRemove.name }.forEach {
-                    cartRepository.deleteMovieFromCart(it.cartId, userName)
+                    cartRepository.deleteMovieFromCart(it.cartId, currentUserName)
                 }
                 loadCart()
             } catch (e: Exception) {
@@ -110,13 +105,15 @@ class CartScreenViewModel @Inject constructor(var cartRepository: CartRepository
 
     // Clears all items from cart
     fun clearCart() {
+        val currentUserName = userName.value ?: return
+        
         CoroutineScope(Dispatchers.Main).launch {
             try {
                 val currentMovies = cartMovieList.value ?: return@launch
                 for (movie in currentMovies) {
-                    val allMovies = cartRepository.getMoviesFromCart(userName)
+                    val allMovies = cartRepository.getMoviesFromCart(currentUserName)
                     allMovies.filter { it.name == movie.name }.forEach {
-                        cartRepository.deleteMovieFromCart(it.cartId, userName)
+                        cartRepository.deleteMovieFromCart(it.cartId, currentUserName)
                     }
                 }
                 cartMovieList.value = emptyList()
@@ -130,20 +127,18 @@ class CartScreenViewModel @Inject constructor(var cartRepository: CartRepository
     // Adds movie to cart, combining with existing entries if any
     fun addToCart(name: String, image: String, price: Int, category: String,
                  rating: Double, year: Int, director: String, description: String) {
+        val currentUserName = userName.value ?: return
+        
         CoroutineScope(Dispatchers.Main).launch {
             try {
-                // Checks all movie records
-                val allMovies = cartRepository.getMoviesFromCart(userName)
+                val allMovies = cartRepository.getMoviesFromCart(currentUserName)
                 val existingMovies = allMovies.filter { it.name == name }
                 val currentQuantity = existingMovies.sumOf { it.orderAmount }
 
-
-                // Deletes each movies from existingMovies
                 existingMovies.forEach {
-                    cartRepository.deleteMovieFromCart(it.cartId, userName)
+                    cartRepository.deleteMovieFromCart(it.cartId, currentUserName)
                 }
 
-                //Adds movie with new quantity
                 cartRepository.addMovieToCart(
                     name = name,
                     image = image,
@@ -154,7 +149,7 @@ class CartScreenViewModel @Inject constructor(var cartRepository: CartRepository
                     director = director,
                     description = description,
                     orderAmount = currentQuantity + 1,
-                    userName = userName
+                    userName = currentUserName
                 )
                 loadCart()
             } catch (e: Exception) {
