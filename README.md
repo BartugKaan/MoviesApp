@@ -23,13 +23,12 @@ MoviesApp is a movie search and cart application built using Kotlin, Jetpack Com
 _For more details, see the [commit history](https://github.com/BartugKaan/MoviesApp/commits/master)._
 
 ## Images and Videos
-![Screenshot_1736601627](https://github.com/user-attachments/assets/3868370b-fdd8-4452-be0c-ed927b0bc481)
-![Screenshot_1736601630](https://github.com/user-attachments/assets/52d624f3-cfd3-42b0-92e8-418603b3cf4b)
-![Screenshot_1736601638](https://github.com/user-attachments/assets/1880ed6b-8a13-48af-bc37-5853ffde7097)
-![Screenshot_1736601655](https://github.com/user-attachments/assets/e1bdee67-47eb-46b0-bdd3-1ac4ad4cbb84)
-![Screenshot_1736601671](https://github.com/user-attachments/assets/e67c8aa9-449d-402b-a4d8-d1c15d6fe2f5)
-![Screenshot_1736601674](https://github.com/user-attachments/assets/08719521-b290-48b6-aab5-c03bc2b6e487)
-
+<img src="https://github.com/user-attachments/assets/3868370b-fdd8-4452-be0c-ed927b0bc481" width="450" height="600">
+<img src="https://github.com/user-attachments/assets/52d624f3-cfd3-42b0-92e8-418603b3cf4b" width="450" height="600">
+<img src="https://github.com/user-attachments/assets/1880ed6b-8a13-48af-bc37-5853ffde7097" width="450" height="600">
+<img src="https://github.com/user-attachments/assets/e1bdee67-47eb-46b0-bdd3-1ac4ad4cbb84" width="450" height="600">
+<img src="https://github.com/user-attachments/assets/e67c8aa9-449d-402b-a4d8-d1c15d6fe2f5" width="450" height="600">
+<img src="https://github.com/user-attachments/assets/08719521-b290-48b6-aab5-c03bc2b6e487" width="450" height="600">
 
 ## Installation
 
